@@ -2,11 +2,7 @@ import { BOOKS, classifyQuestion, chooseAnswer, formatSavedTime } from "./logic.
 
 const STORAGE_KEY = "ai-book-of-answers:saved:v1";
 const PREFS_KEY = "ai-book-of-answers:prefs:v1";
-const urlParams = new URLSearchParams(window.location.search);
-const fastMode = urlParams.has("fast");
-const previewPhase = urlParams.get("preview");
-const timeScale = fastMode ? 0.03 : 1;
-const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds * timeScale));
+const wait = (milliseconds) => new Promise((resolve) => window.setTimeout(resolve, milliseconds));
 
 const MESSAGES = {
   zh: {
@@ -216,12 +212,9 @@ function savePrefs() {
 }
 
 const initialPrefs = getPrefs();
-const requestedLanguage = urlParams.get("lang");
-let currentLanguage = ["zh", "en"].includes(requestedLanguage)
-  ? requestedLanguage
-  : (["zh", "en"].includes(initialPrefs.language)
-      ? initialPrefs.language
-      : (navigator.language?.toLowerCase().startsWith("zh") ? "zh" : "en"));
+let currentLanguage = ["zh", "en"].includes(initialPrefs.language)
+  ? initialPrefs.language
+  : (navigator.language?.toLowerCase().startsWith("zh") ? "zh" : "en");
 let soundEnabled = initialPrefs.soundEnabled !== false;
 let currentReading = null;
 let ritualBook = null;
@@ -388,7 +381,7 @@ function closestVolumeToCenter(book) {
 }
 
 function waitForBookAtCenter(book, runId) {
-  if (fastMode || window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+  if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
     return Promise.resolve(closestVolumeToCenter(book)?.volume || null);
   }
 
@@ -694,7 +687,6 @@ async function beginRitual(question) {
   dom.questionEcho.textContent = question;
   showScreen(dom.reading);
   revealBookUniverse(book);
-  if (previewPhase === "gallery") return;
 
   await wait(650);
   if (runId !== ritualRun) return;
@@ -704,14 +696,12 @@ async function beginRitual(question) {
   markMatchedBook(book);
   updateReadingCopy();
   advanceAnalysis(1);
-  if (previewPhase === "matching") return;
 
   const arrivingVolume = await waitForBookAtCenter(book, runId);
   if (runId !== ritualRun || !arrivingVolume) return;
   ritualPhase = "selected";
   focusBookInUniverse(book, arrivingVolume);
   updateReadingCopy();
-  if (previewPhase === "selected") return;
 
   await wait(680);
   if (runId !== ritualRun) return;
@@ -731,7 +721,6 @@ async function beginRitual(question) {
   if (runId !== ritualRun) return;
   dom.ritualBook.classList.add("is-opening");
   sound.play("open");
-  if (previewPhase === "opening") return;
 
   await wait(1240);
   if (runId !== ritualRun) return;
@@ -740,7 +729,6 @@ async function beginRitual(question) {
   updateReadingCopy();
   dom.ritualBook.classList.add("is-flipping");
   sound.play("flip");
-  if (previewPhase === "flipping") return;
 
   await wait(1900);
   if (runId !== ritualRun) return;
@@ -1013,11 +1001,3 @@ generateStars();
 buildBookUniverse();
 buildHomeBookLoop();
 applyLanguage(currentLanguage);
-
-// Preview hook: `?fast&lang=en&question=...` shortens the ritual for visual smoke tests.
-const previewQuestion = urlParams.get("question");
-if (fastMode && previewQuestion) {
-  dom.input.value = previewQuestion.slice(0, 80);
-  dom.input.dispatchEvent(new Event("input"));
-  window.setTimeout(() => dom.form.requestSubmit(), 30);
-}
