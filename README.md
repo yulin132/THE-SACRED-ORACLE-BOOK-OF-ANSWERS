@@ -13,16 +13,6 @@
 - 收藏答案、查看历史、删除收藏（使用浏览器本地存储）
 - 再次提问、问题示例、移动端适配与基础无障碍支持
 
-## 预览
-
-在当前目录启动静态服务器：
-
-```powershell
-python -m http.server 4173
-```
-
-然后访问 <http://localhost:4173>。
-
 ## 接入真实 AI
 
 当前分类逻辑位于 `logic.mjs` 的 `classifyQuestion()`。接入模型 API 时，只需将这个函数替换为返回六类书籍 ID 的异步请求，并在 `app.mjs` 的 `beginRitual()` 中等待结果即可，页面和动画结构无需改动。
