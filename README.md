@@ -1,18 +1,58 @@
-# 答案回响 / The Sacred Oracle
+# The Sacred Oracle
 
-一个零依赖、可直接预览的完整网页原型，包含：
+The Sacred Oracle is a self-contained, ritual-inspired web experience that turns one personal question into one concise answer.
 
-- 中英文完整界面切换，并支持中英文问题识别
-- 六类问题识别：爱情、财富、事业、成长、选择、命运
-- 六本分类书保持“爱情之书 / LOVE BOOK”等直观的上一版命名
-- 书籍出现、打开、翻页、停留的完整仪式动画
-- 无卡片边界的斜向无缝书阵、区域渐隐虚化、滚动选书、聚焦和景深退场镜头
-- 每本书 30 条独立中英双语答案（共 180 对），中英文分别采用东方签语与西方圣谕式表达
-- 浏览器实时合成的聆听、选书、开书、翻页、揭示和收藏音效
-- 音效静音控制，并自动保存语言与音效偏好
-- 收藏答案、查看历史、删除收藏（使用浏览器本地存储）
-- 再次提问、问题示例、移动端适配与基础无障碍支持
+Instead of behaving like a chatbot, it matches each question with one of six thematic books, brings the selected book to the center, opens it, turns its pages, and reveals a short response.
 
-## 接入真实 AI
+## Features
 
-当前分类逻辑位于 `logic.mjs` 的 `classifyQuestion()`。接入模型 API 时，只需将这个函数替换为返回六类书籍 ID 的异步请求，并在 `app.mjs` 的 `beginRitual()` 中等待结果即可，页面和动画结构无需改动。
+- Complete English and Chinese interfaces with bilingual question recognition
+- Six question categories: Love, Wealth, Career, Growth, Choice, and Destiny
+- A seamless diagonal book loop with smooth edge fading and depth transitions
+- A deliberate selection sequence that stops the matched book at the center before opening it
+- Full book appearance, selection, enlargement, opening, page-turning, and answer-reveal animations
+- 30 original bilingual answers per book, for a total of 180 answer pairs
+- Distinct Eastern-inspired Chinese responses and Western oracle-style English responses
+- Browser-generated sound effects for listening, selecting, opening, turning pages, revealing, and saving
+- Persistent language and sound preferences
+- Saved answers, history viewing, and favorite removal through local browser storage
+- Responsive layouts, example questions, replay support, and reduced-motion accessibility
+
+## How It Works
+
+1. The user asks a personal question.
+2. The local classifier matches the question with one of the six books.
+3. The collection completes a visible loop and stops with the matched book at the center.
+4. The selected book responds, enlarges, opens, and turns its pages.
+5. One concise answer is revealed.
+
+## Run Locally
+
+No dependencies or build step are required.
+
+From the project directory, start a static server:
+
+```bash
+python -m http.server 4173
+```
+
+Then open `http://localhost:4173` in a modern browser.
+
+## AI Integration
+
+The current question-classification logic is implemented in `classifyQuestion()` inside `logic.mjs`. To connect a production AI model, replace this function with an asynchronous request that returns one of the six book IDs, then await that result inside `beginRitual()` in `app.mjs`.
+
+The interface and animation system do not need to change when a model API is introduced.
+
+## Built With
+
+- Semantic HTML
+- CSS
+- JavaScript modules
+- Web Audio API
+- Browser local storage
+- Codex with GPT-5.6 for iterative product design, implementation, testing, and refinement
+
+## Repository
+
+This repository contains the complete static prototype. It runs entirely in the browser and does not require an account, database, or backend service.
